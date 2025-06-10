@@ -2,7 +2,11 @@ from fastapi import FastAPI
 
 from app.endpoints import user_endpoints
 
-app = FastAPI()
+app = FastAPI(
+    title="User Management API",
+    description="API for managing users",
+    version="1.0.0",
+)
 
 app.include_router(user_endpoints.router)
 
