@@ -1,14 +1,12 @@
 from fastapi import FastAPI
 
+from app.endpoints import user_endpoints
+
 app = FastAPI()
+
+app.include_router(user_endpoints.router)
 
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
-
-
-@app.post("/submit")
-async def submit(data: dict):
-    # Process the submitted data
-    return {"message": "Data received", "data": data}
