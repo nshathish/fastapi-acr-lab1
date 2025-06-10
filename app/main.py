@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.endpoints import user_endpoints
+from app.endpoints.user import user_endpoints
 
 app = FastAPI(
     title="User Management API",
