@@ -1,0 +1,40 @@
+name: Build and Push to ACR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to ACR
+        uses: azure/login@v1
+        with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Azure CLI - Get ACR login server
+        id: acr-login-server
+        run: |
+          ACR_NAME="az204acr31941"
+          echo "##[set-output name=acr_login_server;]$(az acr show --name $ACR_NAME --query loginServer --output tsv)"
+
+      - name: Docker login to ACR
+        run: |
+          echo "${{ secrets.AZURE_CREDENTIALS }}" > creds.json
+          ACR_USERNAME=$(jq -r '.clientId' creds.json)
+          ACR_PASSWORD=$(jq -r '.clientSecret' creds.json)
+          ACR_LOGIN_SERVER="${{ steps.acr.outputs.loginServer }}"
+          echo $ACR_PASSWORD | docker login $ACR_LOGIN_SERVER -u $ACR_USERNAME --password-stdin
+
+      - name: Build and push Docker image
+        run: |
+          ACR_LOGIN_SERVER="${{ steps.acr.outputs.loginServer }}"
+          IMAGE_TAG="$ACR_LOGIN_SERVER/fastapi-app:latest"
+          docker build -t $IMAGE_TAG .
+          docker push $IMAGE_TAG
