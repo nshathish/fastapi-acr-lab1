@@ -43,6 +43,6 @@ jobs:
             --dns-name-label ${{ vars.DNS_LABEL }} \
             --ports 80 \
             --os-type Linux \
-            --cpu 1  \        
+            --cpu 1  \
             --memory 1.5 \
             --ip-address Public
