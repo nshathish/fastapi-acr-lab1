@@ -1,0 +1,45 @@
+name: Deploy to Azure Container Instances
+
+on:
+  workflow_run:
+    workflows: ["Build and Push to ACR"]
+    types:
+      - completed
+
+jobs:
+  deploy-to-aci:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get ACR login server
+        id: acr
+        run: |
+          ACR_LOGIN_SERVER=$(az acr show --name ${{ vars.ACR_NAME }} --query loginServer -o tsv)
+          echo "ACR_LOGIN_SERVER=$ACR_LOGIN_SERVER" >> $GITHUB_ENV
+
+      - name: Delete existing ACI container (if it exists)
+        continue-on-error: true
+        run: |
+          az container delete \
+            --name ${{ vars.ACI_NAME }} \
+            --resource-group ${{ vars.RESOURCE_GROUP }} \
+            --yes --no-wait
+
+      - name: Deploy container to ACI
+        run: |
+          az container create \
+            --resource-group ${{ vars.RESOURCE_GROUP }} \
+            --name ${{ vars.ACI_NAME }} \
+            --image $ACR_LOGIN_SERVER/${{ vars.IMAGE_NAME }}:latest \
+            --registry-login-server $ACR_LOGIN_SERVER \
+            --registry-username $(az acr credential show --name ${{ vars.ACR_NAME }} --query username -o tsv) \
+            --registry-password $(az acr credential show --name ${{ vars.ACR_NAME }} --query passwords[0].value -o tsv) \
+            --dns-name-label ${{ vars.DNS_LABEL }} \
+            --ports 80 \
+            --ip-address Public
