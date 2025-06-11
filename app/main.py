@@ -5,7 +5,7 @@ from app.endpoints.user import user_endpoints
 app = FastAPI(
     title="User Management API",
     description="API for managing users",
-    version="1.0.2",
+    version="1.0.3",
 )
 
 app.include_router(user_endpoints.router)
