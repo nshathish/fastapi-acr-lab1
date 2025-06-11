@@ -32,5 +32,4 @@ jobs:
         run: |
           IMAGE_TAG1="$ACR_LOGIN_SERVER/${{ vars.IMAGE_NAME }}:latest"          
           docker build -t $IMAGE_TAG1 .
-          docker push $IMAGE_TAG1
-          docker push $IMAGE_TAG2
+          docker push $IMAGE_TAG1          
