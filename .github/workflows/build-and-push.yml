@@ -33,5 +33,5 @@ jobs:
           IMAGE_TAG1="$ACR_LOGIN_SERVER/${{ vars.IMAGE_NAME }}:latest"
           IMAGE_TAG2="$ACR_LOGIN_SERVER/${{ vars.IMAGE_NAME }}:{{ github.sha }}"
           docker build -t $IMAGE_TAG1 -t $IMAGE_TAG2 .
-          docker push $IMAGE_TAG
+          docker push $IMAGE_TAG1
           docker push $IMAGE_TAG2
