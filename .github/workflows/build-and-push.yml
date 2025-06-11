@@ -30,6 +30,7 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          IMAGE_TAG="$ACR_LOGIN_SERVER/${{ vars.IMAGE_NAME }}:latest"
+          IMAGE_TAG1="$ACR_LOGIN_SERVER/${{ vars.IMAGE_NAME }}:latest"
+          IMAGE_TAG2="$ACR_LOGIN_SERVER/${{ vars.IMAGE_NAME }}:{{ Run.ID }}"
           docker build -t $IMAGE_TAG .
           docker push $IMAGE_TAG
