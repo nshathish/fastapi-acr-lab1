@@ -42,4 +42,5 @@ jobs:
             --registry-password $(az acr credential show --name ${{ vars.ACR_NAME }} --query passwords[0].value -o tsv) \
             --dns-name-label ${{ vars.DNS_LABEL }} \
             --ports 80 \
+            --os-type Linux \
             --ip-address Public
